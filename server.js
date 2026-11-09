@@ -20,6 +20,7 @@ const itemSchema = new mongoose.Schema({
   currentInstallment:{type:Number,default:1,min:1},
   dueDay:{type:Number,default:null,min:1,max:31},
   recurring:{type:Boolean,default:false},
+  paidOccurrences:{type:[String],default:[]},
   recurrence:{type:String,enum:['monthly'],default:'monthly'},
   notes:{type:String,default:''}
 },{timestamps:true});
@@ -65,6 +66,21 @@ app.put('/api/items/:id',async(req,res)=>{
     if(!item) return res.status(404).json({error:'Registro não encontrado.'});
     res.json(item);
   } catch(e){ res.status(400).json({error:'Não foi possível atualizar.'}); }
+});
+
+app.patch('/api/items/:id/payment',async(req,res)=>{
+  try {
+    if(!MONGO_URI) return res.status(503).json({error:'MongoDB não configurado.'});
+    const {occurrenceKey,paid}=req.body||{};
+    if(typeof occurrenceKey!=='string'||!occurrenceKey||occurrenceKey.length>160||typeof paid!=='boolean')
+      return res.status(400).json({error:'Dados de pagamento inválidos.'});
+    const update=paid
+      ? {$addToSet:{paidOccurrences:occurrenceKey}}
+      : {$pull:{paidOccurrences:occurrenceKey}};
+    const item=await Item.findByIdAndUpdate(req.params.id,update,{new:true,runValidators:true});
+    if(!item) return res.status(404).json({error:'Registro não encontrado.'});
+    res.json(item);
+  } catch(e){ res.status(400).json({error:'Não foi possível atualizar o pagamento.'}); }
 });
 
 app.delete('/api/items/:id',async(req,res)=>{
