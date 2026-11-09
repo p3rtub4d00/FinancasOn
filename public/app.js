@@ -52,7 +52,21 @@ $('#itemForm').addEventListener('submit',async e=>{e.preventDefault();const idTo
 $('#menuBtn').addEventListener('click',()=>document.querySelector('.sidebar').classList.toggle('open'));
 document.querySelectorAll('.month-arrow').forEach(b=>b.addEventListener('click',()=>{viewMonth=addMonths(viewMonth,Number(b.dataset.month));render()}));
 $('#prevMonth').addEventListener('click',()=>{calendarMonth=addMonths(calendarMonth,-1);renderCalendar()});$('#nextMonth').addEventListener('click',()=>{calendarMonth=addMonths(calendarMonth,1);renderCalendar()});
-function renderCalendar(){const y=calendarMonth.getFullYear(),m=calendarMonth.getMonth();$('#calendarTitle').textContent=capitalize(calendarMonth.toLocaleDateString('pt-BR',{month:'long',year:'numeric'}));const first=new Date(y,m,1),days=new Date(y,m+1,0).getDate(),start=first.getDay(),prevDays=new Date(y,m,0).getDate();const cells=[];for(let i=0;i<42;i++){const day=i-start+1;let d,muted=false;if(day<1){d=new Date(y,m-1,prevDays+day);muted=true}else if(day>days){d=new Date(y,m+1,day-days);muted=true}else d=new Date(y,m,day);const dateKey=d.toISOString().slice(0,10);const ev=occurrenceListForDate(d);cells.push('<div class="calendar-cell '+(muted?'muted ':'')+(dateKey===new Date().toISOString().slice(0,10)?'today':'')+'"><div class="day-number">'+d.getDate()+'</div><div class="day-events">'+ev.slice(0,3).map(x=>'<div class="event '+(x.type==='income'?'in':x.type==='installment'?'inst':'out')+'" title="'+esc(x.description)+'">'+(x.type==='income'?'+ ':'− ')+esc(x.description)+' · '+money(x.amount)+'</div>').join('')+(ev.length>3?'<div class="event">+'+(ev.length-3)+' outros</div>':'')+'</div></div>')}$('#calendarGrid').innerHTML=cells.join('');const occ=monthOccurrences(calendarMonth);const inc=occ.filter(x=>x.type==='income').reduce((s,x)=>s+x.amount,0),out=occ.filter(x=>x.type!=='income').reduce((s,x)=>s+x.amount,0);$('#calendarSummary').innerHTML='<div class="summary-box in"><small>Receitas previstas</small><b>'+money(inc)+'</b></div><div class="summary-box out"><small>Despesas previstas</small><b>'+money(out)+'</b></div><div class="summary-box"><small>Saldo do mês</small><b>'+money(inc-out)+'</b></div>'}
+function renderCalendar(){
+ const y=calendarMonth.getFullYear(),m=calendarMonth.getMonth();
+ $('#calendarTitle').textContent=capitalize(calendarMonth.toLocaleDateString('pt-BR',{month:'long',year:'numeric'}));
+ const occ=monthOccurrences(calendarMonth);
+ const inc=occ.filter(x=>x.type==='income').reduce((s,x)=>s+Number(x.amount||0),0);
+ const out=occ.filter(x=>x.type!=='income').reduce((s,x)=>s+Number(x.amount||0),0);
+ const balance=inc-out;
+ const balanceClass=balance>0?'positive':balance<0?'negative':'zero';
+ const balanceLabel=balance>0?'Sobra prevista':balance<0?'Falta prevista':'Saldo equilibrado';
+ const balanceHelp=balance>0?'Este é o valor que deve restar após as despesas.':balance<0?'As despesas previstas superam as receitas neste mês.':'As receitas e despesas previstas estão iguais.';
+ $('#calendarSummary').innerHTML=
+  '<article class="summary-box in"><span class="summary-icon">↗</span><small>Receitas previstas</small><b>'+money(inc)+'</b><p>Todo o dinheiro que deve entrar</p></article>'+
+  '<article class="summary-box out"><span class="summary-icon">↘</span><small>Despesas previstas</small><b>'+money(out)+'</b><p>Contas, gastos e parcelas do mês</p></article>'+
+  '<article class="summary-box balance '+balanceClass+'"><div><small>'+balanceLabel+'</small><b>'+(balance<0?'− ':'')+money(Math.abs(balance))+'</b><p>'+balanceHelp+'</p></div><span class="balance-symbol">'+(balance>0?'✓':balance<0?'!':'=')+'</span></article>';
+}
 function occurrenceListForDate(d){const from=new Date(d.getFullYear(),d.getMonth(),d.getDate()),to=new Date(d.getFullYear(),d.getMonth(),d.getDate(),23,59,59);return items.flatMap(x=>occurrenceList(x,from,to))}
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('#installBtn').hidden=false});
 $('#installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('#installBtn').hidden=true});
