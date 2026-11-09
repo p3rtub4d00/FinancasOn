@@ -28,11 +28,12 @@ const itemSchema = new mongoose.Schema({
 let Item;
 try { Item = mongoose.model('Item', itemSchema); } catch(e) { Item = mongoose.model('Item'); }
 
-app.get('/api/health',(_,res)=>res.json({ok:true,mongodb:mongoose.connection.readyState===1}));
+app.get('/api/health',(_,res)=>{const connected=mongoose.connection.readyState===1;res.status(connected?200:503).json({ok:connected,mongodb:connected?'connected':'disconnected',readyState:mongoose.connection.readyState});});
 
 app.get('/api/items',async(_,res)=>{
   try {
-    if(!MONGO_URI) return res.json([]);
+    if(!MONGO_URI) return res.status(503).json({error:'Banco de dados não configurado. Verifique MONGODB_URI no Render.'});
+    if(mongoose.connection.readyState!==1) return res.status(503).json({error:'Banco de dados temporariamente indisponível. Os lançamentos não foram apagados.'});
     const items=await Item.find().sort({createdAt:-1}).lean();
     res.json(items);
   } catch(e){ res.status(500).json({error:'Não foi possível carregar os dados.'}); }
@@ -40,7 +41,7 @@ app.get('/api/items',async(_,res)=>{
 
 app.post('/api/items',async(req,res)=>{
   try {
-    if(!MONGO_URI) return res.status(503).json({error:'MongoDB não configurado.'});
+    if(!MONGO_URI || mongoose.connection.readyState!==1) return res.status(503).json({error:'Banco de dados indisponível. O lançamento não foi salvo.'});
     const data={...req.body};
     if(data.type==='installment'){
       data.totalInstallments=Number(data.totalInstallments||1);
@@ -94,10 +95,14 @@ app.delete('/api/items/:id',async(req,res)=>{
 app.get(/.*/,(req,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
 
 async function start(){
-  if(MONGO_URI){
+  if(!MONGO_URI) console.error('ERRO: MONGODB_URI não configurada no ambiente.');
+  else {
     try { await mongoose.connect(MONGO_URI); console.log('MongoDB conectado'); }
     catch(e){ console.error('MongoDB indisponível:',e.message); }
-  } else console.warn('MONGODB_URI não configurada.');
+    mongoose.connection.on('disconnected',()=>console.error('MongoDB desconectado.'));
+    mongoose.connection.on('connected',()=>console.log('MongoDB conectado/restabelecido.'));
+    mongoose.connection.on('error',e=>console.error('Erro MongoDB:',e.message));
+  }
   app.listen(PORT,()=>console.log('FinancasOn rodando na porta '+PORT));
 }
 start();
