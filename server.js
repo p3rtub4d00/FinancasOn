@@ -58,7 +58,7 @@ app.delete('/api/items/:id',async(req,res)=>{
   } catch(e){ res.status(400).json({error:'Não foi possível excluir.'}); }
 });
 
-app.get('*',(req,res)=>{
+app.get(/.*/,(req,res)=>{
   res.sendFile(path.join(__dirname,'public','index.html'));
 });
 
