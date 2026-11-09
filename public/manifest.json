@@ -1,0 +1,11 @@
+{
+  "name":"FinancasOn",
+  "short_name":"FinancasOn",
+  "description":"Controle financeiro pessoal",
+  "start_url":"/",
+  "display":"standalone",
+  "background_color":"#f5f7fb",
+  "theme_color":"#111827",
+  "orientation":"portrait-primary",
+  "icons":[{"src":"/logo.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
