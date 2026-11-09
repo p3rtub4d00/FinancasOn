@@ -2,7 +2,7 @@ let items=[]; let selectedType='income'; let editingId=null; let deferredPrompt=
 const money=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(n)||0);
 const $=s=>document.querySelector(s);
 function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500)}
-async function load(){try{const r=await fetch('/api/items');items=await r.json();render()}catch(e){toast('Não foi possível carregar os dados.');}}
+async function load(){try{const r=await fetch('/api/items',{cache:'no-store'});const data=await r.json();if(!r.ok||!Array.isArray(data)){throw new Error(data.error||'Servidor ou banco de dados indisponível.')}items=data;render()}catch(e){console.error('Falha ao carregar lançamentos:',e);toast(e.message||'Não foi possível carregar os dados.');}}
 function monthKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
 function addMonths(date,n){return new Date(date.getFullYear(),date.getMonth()+n,date.getDate())}
 function occurrenceList(item,from,to){
