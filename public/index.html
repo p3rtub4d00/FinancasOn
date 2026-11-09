@@ -65,7 +65,7 @@
 <div class="form-grid"><label>Valor<input id="amount" type="number" min="0" step="0.01" required placeholder="0,00"></label><label>Categoria<select id="category"><option>Moradia</option><option>Alimentação</option><option>Transporte</option><option>Saúde</option><option>Educação</option><option>Lazer</option><option>Contas</option><option>Salário</option><option>Outros</option></select></label></div>
 <div id="installmentFields" class="form-grid hidden"><label>Valor total da compra<input id="totalAmount" type="number" min="0" step="0.01" placeholder="Ex.: 1500,00"></label><label>Número de parcelas<input id="totalInstallments" type="number" min="2" value="2"></label><label>Parcela atual<input id="currentInstallment" type="number" min="1" value="1"></label></div>
 <label>Data / vencimento<input id="date" type="date"></label>
-<div id="recurringBox" class="recurring-box"><label class="check-label"><input id="recurring" type="checkbox"> <span><b>Receita fixa mensal</b><small>Ex.: salário recebido todo mês. O sistema vai projetar automaticamente os próximos meses.</small></span></label></div>
+<div id="recurringBox" class="recurring-box"><label class="check-label"><input id="recurring" type="checkbox"> <span><b id="recurringLabel">Receita fixa mensal</b><small id="recurringHelp">Marque para repetir este lançamento automaticamente todos os meses.</small></span></label></div>
 <label>Observação (opcional)<textarea id="notes" rows="2" placeholder="Detalhes..."></textarea></label>
 <div class="modal-actions"><button type="button" class="secondary" data-close>Cancelar</button><button class="primary" id="saveBtn">Salvar lançamento</button></div></form></div></div>
 <div id="toast" class="toast"></div>
