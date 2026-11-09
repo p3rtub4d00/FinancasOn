@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="description" content="FinancasOn - organize sua vida financeira de forma simples.">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/logo.svg">
+<title>FinancasOn</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div id="app">
+  <aside class="sidebar">
+    <div class="brand"><img src="/logo.svg" alt="FinancasOn"><div><strong>FinancasOn</strong><span>Seu dinheiro, sob controle.</span></div></div>
+    <nav>
+      <button class="nav active" data-view="dashboard">⌂ <span>Visão geral</span></button>
+      <button class="nav" data-view="lancamentos">＋ <span>Lançamentos</span></button>
+      <button class="nav" data-view="parcelas">◫ <span>Parcelas</span></button>
+      <button class="nav" data-view="categorias">◉ <span>Categorias</span></button>
+    </nav>
+    <div class="sidebar-foot">FinancasOn <small>Controle financeiro pessoal</small></div>
+  </aside>
+  <main>
+    <header class="topbar">
+      <div><button id="menuBtn" class="icon-btn mobile-only">☰</button><div class="eyebrow">CONTROLE FINANCEIRO</div><h1 id="pageTitle">Visão geral</h1></div>
+      <button id="installBtn" class="install-btn" hidden>⇩ Instalar app</button>
+    </header>
+    <section id="dashboard" class="view active-view">
+      <div class="hero"><div><span class="pill">Resumo do mês</span><h2>Olá! Vamos cuidar das suas finanças.</h2><p>Tenha uma visão clara do que entra, do que sai e do que ainda vem pela frente.</p></div><button class="primary" data-open="modal">+ Novo lançamento</button></div>
+      <div class="cards">
+        <article class="metric"><span>Saldo previsto</span><strong id="balance">R$ 0,00</strong><small id="balanceHint">Receitas − despesas</small></article>
+        <article class="metric income"><span>Receitas</span><strong id="income">R$ 0,00</strong><small>Entradas cadastradas</small></article>
+        <article class="metric expense"><span>Despesas</span><strong id="expense">R$ 0,00</strong><small>Saídas cadastradas</small></article>
+        <article class="metric installment"><span>Parcelas</span><strong id="installmentTotal">R$ 0,00</strong><small>Compromissos cadastrados</small></article>
+      </div>
+      <div class="grid">
+        <section class="panel"><div class="panel-head"><div><h3>Movimentações recentes</h3><p>Seus últimos lançamentos</p></div><button class="text-btn" data-view-go="lancamentos">Ver todos</button></div><div id="recentList" class="list"></div></section>
+        <section class="panel"><div class="panel-head"><div><h3>Próximos compromissos</h3><p>Parcelas e despesas programadas</p></div></div><div id="upcomingList" class="list"></div></section>
+      </div>
+    </section>
+    <section id="lancamentos" class="view"><div class="section-head"><div><h2>Lançamentos</h2><p>Registre receitas e despesas do seu dia a dia.</p></div><button class="primary" data-open="modal">+ Novo lançamento</button></div><section class="panel"><div id="allList" class="list"></div></section></section>
+    <section id="parcelas" class="view"><div class="section-head"><div><h2>Parcelas</h2><p>Acompanhe compras parceladas sem perder o controle.</p></div><button class="primary" data-open="modal" data-type="installment">+ Nova parcela</button></div><section class="panel"><div id="installmentList" class="list"></div></section></section>
+    <section id="categorias" class="view"><div class="section-head"><div><h2>Categorias</h2><p>Organização simples para entender onde seu dinheiro está indo.</p></div></div><div id="categoryGrid" class="category-grid"></div></section>
+  </main>
+</div>
+<div id="modal" class="modal" aria-hidden="true"><div class="modal-card"><div class="modal-head"><div><span class="eyebrow">NOVO REGISTRO</span><h2>Adicionar lançamento</h2></div><button class="close" data-close>×</button></div>
+<form id="itemForm"><div class="type-tabs"><button type="button" data-type="income" class="type active">Receita</button><button type="button" data-type="expense" class="type">Despesa</button><button type="button" data-type="installment" class="type">Parcelada</button></div>
+<label>Descrição<input id="description" required placeholder="Ex.: Salário, aluguel, mercado..."></label>
+<div class="form-grid"><label>Valor<input id="amount" type="number" min="0" step="0.01" required placeholder="0,00"></label><label>Categoria<select id="category"><option>Moradia</option><option>Alimentação</option><option>Transporte</option><option>Saúde</option><option>Educação</option><option>Lazer</option><option>Contas</option><option>Salário</option><option>Outros</option></select></label></div>
+<div id="installmentFields" class="form-grid hidden"><label>Total de parcelas<input id="totalInstallments" type="number" min="2" value="2"></label><label>Parcela atual<input id="currentInstallment" type="number" min="1" value="1"></label></div>
+<label>Data<input id="date" type="date"></label><label>Observação (opcional)<textarea id="notes" rows="2" placeholder="Detalhes..."></textarea></label>
+<div class="modal-actions"><button type="button" class="secondary" data-close>Cancelar</button><button class="primary">Salvar lançamento</button></div></form></div></div>
+<div id="toast" class="toast"></div>
+<script src="/app.js"></script>
+</body>
+</html>
