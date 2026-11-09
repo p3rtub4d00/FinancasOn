@@ -102,6 +102,13 @@ async function start(){
     mongoose.connection.on('disconnected',()=>console.error('MongoDB desconectado.'));
     mongoose.connection.on('connected',()=>console.log('MongoDB conectado/restabelecido.'));
     mongoose.connection.on('error',e=>console.error('Erro MongoDB:',e.message));
+    const retryTimer=setInterval(async()=>{
+      if(mongoose.connection.readyState===0){
+        try { await mongoose.connect(MONGO_URI); console.log('MongoDB reconectado automaticamente.'); }
+        catch(e){ console.error('Nova tentativa de conexão MongoDB falhou:',e.message); }
+      }
+    },15000);
+    retryTimer.unref();
   }
   app.listen(PORT,()=>console.log('FinancasOn rodando na porta '+PORT));
 }
