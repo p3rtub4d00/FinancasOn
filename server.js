@@ -13,11 +13,14 @@ const itemSchema = new mongoose.Schema({
   type:{type:String,enum:['income','expense','installment'],required:true},
   description:{type:String,required:true,trim:true},
   amount:{type:Number,required:true,min:0},
+  totalAmount:{type:Number,default:null,min:0},
   date:{type:String,default:''},
   category:{type:String,default:'Outros'},
-  totalInstallments:{type:Number,default:1},
-  currentInstallment:{type:Number,default:1},
-  dueDay:{type:Number,default:null},
+  totalInstallments:{type:Number,default:1,min:1},
+  currentInstallment:{type:Number,default:1,min:1},
+  dueDay:{type:Number,default:null,min:1,max:31},
+  recurring:{type:Boolean,default:false},
+  recurrence:{type:String,enum:['monthly'],default:'monthly'},
   notes:{type:String,default:''}
 },{timestamps:true});
 
@@ -37,14 +40,28 @@ app.get('/api/items',async(_,res)=>{
 app.post('/api/items',async(req,res)=>{
   try {
     if(!MONGO_URI) return res.status(503).json({error:'MongoDB não configurado.'});
-    const item=await Item.create(req.body);
+    const data={...req.body};
+    if(data.type==='installment'){
+      data.totalInstallments=Number(data.totalInstallments||1);
+      data.totalAmount=Number(data.totalAmount||data.amount||0);
+      data.amount=Number(data.amount||0);
+      if(!data.amount && data.totalAmount && data.totalInstallments) data.amount=data.totalAmount/data.totalInstallments;
+    }
+    const item=await Item.create(data);
     res.status(201).json(item);
   } catch(e){ res.status(400).json({error:'Dados inválidos.'}); }
 });
 
 app.put('/api/items/:id',async(req,res)=>{
   try {
-    const item=await Item.findByIdAndUpdate(req.params.id,req.body,{new:true,runValidators:true});
+    const data={...req.body};
+    if(data.type==='installment'){
+      data.totalInstallments=Number(data.totalInstallments||1);
+      data.totalAmount=Number(data.totalAmount||data.amount||0);
+      data.amount=Number(data.amount||0);
+      if(!data.amount && data.totalAmount && data.totalInstallments) data.amount=data.totalAmount/data.totalInstallments;
+    }
+    const item=await Item.findByIdAndUpdate(req.params.id,data,{new:true,runValidators:true});
     if(!item) return res.status(404).json({error:'Registro não encontrado.'});
     res.json(item);
   } catch(e){ res.status(400).json({error:'Não foi possível atualizar.'}); }
@@ -58,9 +75,7 @@ app.delete('/api/items/:id',async(req,res)=>{
   } catch(e){ res.status(400).json({error:'Não foi possível excluir.'}); }
 });
 
-app.get(/.*/,(req,res)=>{
-  res.sendFile(path.join(__dirname,'public','index.html'));
-});
+app.get(/.*/,(req,res)=>res.sendFile(path.join(__dirname,'public','index.html')));
 
 async function start(){
   if(MONGO_URI){
