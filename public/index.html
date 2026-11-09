@@ -67,6 +67,7 @@
 <div id="recurringBox" class="recurring-box"><label class="check-label"><input id="recurring" type="checkbox"> <span><b id="recurringLabel">Receita fixa mensal</b><small id="recurringHelp">Marque para repetir este lançamento automaticamente todos os meses.</small></span></label></div>
 <label>Observação (opcional)<textarea id="notes" rows="2" placeholder="Detalhes..."></textarea></label>
 <div class="modal-actions"><button type="button" class="secondary" data-close>Cancelar</button><button class="primary" id="saveBtn">Salvar lançamento</button></div></form></div></div>
+<div id="detailsModal" class="modal" aria-hidden="true" onclick="if(event.target===this)closeDetails()"><div class="modal-card details-card"><div class="modal-head"><div><span class="eyebrow">DETALHES DO REGISTRO</span><h2>Movimentação</h2></div><button class="close" type="button" onclick="closeDetails()">×</button></div><div id="detailsContent" class="details-content"></div><div class="modal-actions"><button type="button" class="primary" onclick="closeDetails()">Fechar</button></div></div></div>
 <div id="toast" class="toast"></div>
 <script src="/app.js"></script>
 </body>
