@@ -4,3 +4,5 @@
 
 /* Detalhes das movimentações recentes */
 .recent-clickable{cursor:pointer;border-radius:10px;padding-left:8px;padding-right:8px;margin-left:-8px;margin-right:-8px;transition:background .18s,transform .18s}.recent-clickable:hover{background:#f7f7ff}.recent-clickable:focus-visible{outline:2px solid #8c86f7;outline-offset:2px}.details-card{max-width:480px}.details-content{display:grid;gap:0}.detail-line{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:13px 0;border-bottom:1px solid #eef0f4;font-size:12px}.detail-line span{color:#7b8496;flex:0 0 42%}.detail-line strong{color:#202a3d;text-align:right;white-space:pre-wrap;overflow-wrap:anywhere}.details-card .modal-actions{margin-top:18px}
+
+.detail-hint{font-size:10px;font-weight:800;color:#625bdc;white-space:nowrap}.detail-payment{display:block;width:100%;margin-top:16px;padding:12px;font-size:12px}
